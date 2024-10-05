@@ -95,7 +95,9 @@ const Table = () => {
   return (
     <>
       <table className="table">
-        <caption>Sortable column headers</caption>
+        <caption className="my-6 text-3xl font-semi-bold">
+          Drone Data, with sortable columns
+        </caption>
         <TableHead {...{ columns, handleSorting }} />
         <TableBody {...{ columns, tableData }} />
       </table>
