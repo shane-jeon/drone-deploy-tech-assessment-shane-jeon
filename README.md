@@ -27,8 +27,7 @@ Navigate into main project directory:
 1. Navigate to `backend` directory:
    `cd backend`
 
-2. Create virtual environment and activate:
-   `python3 -m venv venv`
+2. Activate virtual environment:
    `source venv/bin/activate` # Linux/Mac
    `venv/Scripts/activate` # Windows
 
@@ -44,8 +43,8 @@ Backend server will run on `http://localhost:5000/` by default
 
 ### Frontend Setup
 
-1. Navigate to `frontend` directory:
-   `cd ../frontend`
+1. In new terminal, navigate to `frontend` directory:
+   `cd frontend`
 
 2. Install frontend dependencies
    `npm install`
