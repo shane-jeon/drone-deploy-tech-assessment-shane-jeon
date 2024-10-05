@@ -40,12 +40,17 @@ interface TagResponse {
   tags: Array<string>;
 }
 
+interface RawResponse {
+  raw_openai_response: string;
+}
+
 // generalizing type for structured responses
 type QueryResponse =
   | SingleAttributeResponse
   | AggregateResponse
   | MultipleImageResponse
-  | TagResponse;
+  | TagResponse
+  | RawResponse;
 
 function Form({ onSubmit }: FormProps) {
   const [queryFormData, setQueryFormData] = useState<QueryFormData>({
@@ -87,17 +92,24 @@ function Form({ onSubmit }: FormProps) {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <label>
+      <form
+        onSubmit={handleSubmit}
+        className="mt-4 flex flex-col rounded-md border-2 px-8 py-4">
+        <label className="my-4 text-xl">
           Query:
           <input
             type="text"
             name="query"
             value={queryFormData.query}
             onChange={handleInputChange}
+            className="ml-4 rounded-md border-2 py-2"
           />
         </label>
-        <button type="submit">Submit</button>
+        <button
+          type="submit"
+          className="bg-[#3f48e9] px-4 py-2 text-lg text-white">
+          Submit
+        </button>
       </form>
 
       {/* NEW: Display the response in a structured format */}
@@ -137,6 +149,17 @@ function Form({ onSubmit }: FormProps) {
             <div>
               <p>Image Index: {queryResponse.image_index}</p>
               <p>Tags: {queryResponse.tags.join(", ")}</p>
+            </div>
+          )}
+
+          {/* Render Raw Response */}
+          {"raw_openai_response" in queryResponse && (
+            <div>
+              <p>
+                NOTICE: The backend is not yet fully structured for this type of
+                query, so the response is being returned in its raw format.
+              </p>
+              <p>{queryResponse.raw_openai_response}</p>
             </div>
           )}
         </div>

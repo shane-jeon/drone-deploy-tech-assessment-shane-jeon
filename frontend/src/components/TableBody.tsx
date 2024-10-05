@@ -23,7 +23,7 @@ interface DroneData {
   gps_accuracy_m: number;
   gimbal_mode: string;
   subject_detection: string;
-  image_tags: Array<string>;
+  image_tags: Array<string> | string;
 }
 
 interface TableBodyProps {
@@ -37,24 +37,27 @@ const TableBody: React.FC<TableBodyProps> = ({
 }): JSX.Element => {
   // console.log("tableData", JSON.stringify(tableData));
 
-  const test = Object.entries(tableData).map(
-    ([key, value]: [string, DroneData]) => {
-      // console.log("key", key);
-      // console.log("value", value);
-      return <>{value}</>;
+  for (const [key, value] of Object.entries(tableData)) {
+    console.log(JSON.stringify(value));
+    if (Array.isArray(value["image_tags"])) {
+      value["image_tags"] = value["image_tags"].join(", ");
     }
-  );
-
+  }
+  console.log(JSON.stringify(tableData));
   return (
     <>
       <tbody>
         {tableData.map((data) => {
           console.log("CHECKING TYPE:", data);
           return (
-            <tr key={data.image_id}>
+            <tr key={data.image_id} className="border-2">
               {columns.map(({ accessor }: any) => {
                 const tData = data[accessor as keyof DroneData] ?? "--";
-                return <td key={accessor}>{tData}</td>;
+                return (
+                  <td key={accessor} className="border-2 text-center">
+                    {tData}
+                  </td>
+                );
               })}
             </tr>
           );

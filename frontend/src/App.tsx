@@ -13,9 +13,11 @@ function App() {
 
   return (
     <div className="app">
-      <div className="flex bg-pink-700">
+      <div className="mx-10">
         <Table />
-        <Form onSubmit={handleSubmit} />
+        <div className="mt-8 flex justify-center">
+          <Form onSubmit={handleSubmit} />
+        </div>
       </div>
     </div>
   );

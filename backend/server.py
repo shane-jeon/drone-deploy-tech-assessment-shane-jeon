@@ -30,7 +30,9 @@ with open(input_file, encoding='utf-8') as f:
 
 # print("PARSED JSON", parsed_json)
 drone_data = parsed_json["data"]
-print("drone_data", drone_data)
+# print("drone_data", drone_data)
+
+
 # Function to query OpenAI with the new API structure
 def query_openai(prompt):
     response = client.chat.completions.create(
@@ -75,9 +77,9 @@ def process_query():
     You are an assistant that helps answer questions about drone image data. The data includes metadata for a series of images captured during a drone flight. Your job is to interpret the user's question and identify the specific attribute(s), calculations, or conditions they are asking about.
 
     Here is the drone image data:
-    {json.dumps(drone_data_ai, indent=2)}
+    {json.dumps(drone_data, indent=2)}
 
-    The images are numbered sequentially from 1 to {len(drone_data_ai)}. Users may ask questions about various attributes of the images, such as altitude, battery level, GPS coordinates, timestamp, or other aspects of the metadata.
+    The images are numbered sequentially from 1 to {len(drone_data)}. Users may ask questions about various attributes of the images, such as altitude, battery level, GPS coordinates, timestamp, or other aspects of the metadata.
 
     ### User Query ###
     User query: "{user_input}"
@@ -97,10 +99,10 @@ def process_query():
 
     # Query OpenAI with the constructed prompt
     # openai_response = query_openai(prompt)
-    # print(f"OpenAI Response: {openai_response}")  # Debug the OpenAI response
+    # print(f"OpenAI Response: {openai_response}")  
     try:
         openai_response = query_openai(prompt)
-        # print(f"OpenAI Response: {openai_response}")  # Debug the OpenAI response
+        print(f"OpenAI Response: {openai_response}") 
 
     except Exception as e:
         print(f"Error processing OpenAI query: {e}")
@@ -108,10 +110,11 @@ def process_query():
 
     # identify type of response and parse accordingly
 
-    # aggregate calculations
+    # aggregate calculations, what is the average file_size?
     if "average" in openai_response or "total" in openai_response or "minimum" in openai_response or "maximum" in openai_response:
         return jsonify({"type": "aggregate_response", "aggregate_response": openai_response})
-    # multiple attributes, condition based queries
+    
+    # multiple attributes, condition based queries (Which images have altitudes greater than 80?)
     elif ";" in openai_response:
         pairs = openai_response.split(";")
         print("pairs", pairs)
@@ -130,20 +133,29 @@ def process_query():
             except (ValueError, IndexError):
                 continue
         return jsonify({"type": "multiple_image_response", "multiple_image_response": results})
+    
     # tag based queries
     elif "[" in openai_response and "]" in openai_response:
         # handle tag based queries
         try:
             image_index, tags = openai_response.split(", tags:")
-            image_index = int(image_index.split(":")[0].strip())
-            tags_list = json.loads(tags.strip())
-            return jsonify({ "type": "tag_response",
-                "image_index": image_index,
-                "tags": tags_list
-            })
+            image_index_cleaned = image_index.split(":")[0].strip().replace('"', '')
+            image_index = int(image_index_cleaned)
+            tags_cleaned = tags.strip().replace("'", '"')
+            tags_list = json.loads(tags_cleaned)
+            print("image_index", image_index)
+            print("tags", tags_list)
+        #     return jsonify({
+        #     "type": "tag_response",
+        #     "image_index": image_index,
+        #     "tags": tags_list
+        # })
+            return jsonify({"raw_openai_response" :openai_response})
+
         except (ValueError, IndexError, json.JSONDecodeError) as e:
             print(f"Error parsing tag-based response: {e}")
             return jsonify({"error": "Failed to interpret OpenAI response"}), 400
+
     
     # handle single image and attribute response
     else: 
@@ -157,7 +169,9 @@ def process_query():
                 "value": value.strip()
             })
         except (ValueError, IndexError):
-            return jsonify({"error": "Failed to interpret OpenAI response"}), 400
+            print("Returning a raw response as fallback")
+            return jsonify({"type": "raw_response", "raw_openai_response": openai_response})
+
 
 
 # Start the Flask server

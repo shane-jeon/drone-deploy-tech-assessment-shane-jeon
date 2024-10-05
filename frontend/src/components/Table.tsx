@@ -31,28 +31,36 @@ interface DroneData {
 const Table = () => {
   const [tableData, setTableData] = useState<Array<any>>([]);
 
-  const columns: { label: string; accessor: string }[] = [
-    { label: "Image ID", accessor: "image_id" },
-    { label: "Timestamp", accessor: "timestamp" },
-    { label: "Latitude", accessor: "latitude" },
-    { label: "Longitude", accessor: "longitude" },
-    { label: "Altitude (m)", accessor: "altitude_m" },
-    { label: "Heading (deg)", accessor: "heading_deg" },
-    { label: "File Name", accessor: "file_name" },
-    { label: "Camera Tilt (deg)", accessor: "camera_tilt_deg" },
-    { label: "Focal Length (mm)", accessor: "focal_length_mm" },
-    { label: "ISO", accessor: "iso" },
-    { label: "Shutter Speed", accessor: "shutter_speed" },
-    { label: "Aperture", accessor: "aperture" },
-    { label: "Color Temp (K)", accessor: "color_temp_k" },
-    { label: "Image Format", accessor: "image_format" },
-    { label: "File Size (MB)", accessor: "file_size_mb" },
-    { label: "Drone Speed (m/s)", accessor: "drone_speed_mps" },
-    { label: "Battery Level (%)", accessor: "battery_level_pct" },
-    { label: "GPS Accuracy (m)", accessor: "gps_accuracy_m" },
-    { label: "Gimbal Mode", accessor: "gimbal_mode" },
-    { label: "Subject Detection", accessor: "subject_detection" },
-    { label: "Image Tags", accessor: "image_tags" },
+  const columns: { label: string; accessor: string; sortable: boolean }[] = [
+    { label: "Image ID", accessor: "image_id", sortable: true },
+    { label: "Timestamp", accessor: "timestamp", sortable: true },
+    { label: "Latitude", accessor: "latitude", sortable: true },
+    { label: "Longitude", accessor: "longitude", sortable: true },
+    { label: "Altitude (m)", accessor: "altitude_m", sortable: true },
+    { label: "Heading (deg)", accessor: "heading_deg", sortable: true },
+    { label: "File Name", accessor: "file_name", sortable: true },
+    { label: "Camera Tilt (deg)", accessor: "camera_tilt_deg", sortable: true },
+    { label: "Focal Length (mm)", accessor: "focal_length_mm", sortable: true },
+    { label: "ISO", accessor: "iso", sortable: true },
+    { label: "Shutter Speed", accessor: "shutter_speed", sortable: true },
+    { label: "Aperture", accessor: "aperture", sortable: true },
+    { label: "Color Temp (K)", accessor: "color_temp_k", sortable: true },
+    { label: "Image Format", accessor: "image_format", sortable: true },
+    { label: "File Size (MB)", accessor: "file_size_mb", sortable: true },
+    { label: "Drone Speed (m/s)", accessor: "drone_speed_mps", sortable: true },
+    {
+      label: "Battery Level (%)",
+      accessor: "battery_level_pct",
+      sortable: true,
+    },
+    { label: "GPS Accuracy (m)", accessor: "gps_accuracy_m", sortable: true },
+    { label: "Gimbal Mode", accessor: "gimbal_mode", sortable: true },
+    {
+      label: "Subject Detection",
+      accessor: "subject_detection",
+      sortable: true,
+    },
+    { label: "Image Tags", accessor: "image_tags", sortable: true },
   ];
 
   useEffect(() => {
@@ -74,12 +82,31 @@ const Table = () => {
   //   dataArray.push(tableData);
   // });
   console.log("Display data", tableData);
+
+  const handleSorting = (sortField: string, sortOrder: string) => {
+    // console.log(sortField, sortOrder);
+    if (sortField) {
+      const sorted = [...tableData].sort((a, b) => {
+        if (a[sortField] === null) return 1;
+        if (b[sortField] === null) return -1;
+        if (a[sortField] === null && b[sortField] === null) return 0;
+        return (
+          a[sortField as keyof DroneData]
+            .toString()
+            .localeCompare(b[sortField as keyof DroneData].toString(), "en", {
+              number: true,
+            }) * (sortOrder === "asc" ? 1 : -1)
+        );
+      });
+      setTableData(sorted);
+    }
+  };
   return (
     <>
       <table className="table">
         <caption>Sortable column headers</caption>
-        <TableHead columns={columns} />
-        <TableBody columns={columns} tableData={tableData} />
+        <TableHead {...{ columns, handleSorting }} />
+        <TableBody {...{ columns, tableData }} />
       </table>
     </>
   );
