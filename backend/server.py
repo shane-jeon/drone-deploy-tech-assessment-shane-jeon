@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 import os
 import json
-from flask_cors import CORS
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -18,7 +17,6 @@ client = OpenAI(api_key=openai_api_key)
 
 # Initialize Flask app and enable CORS
 app = Flask(__name__)
-CORS(app)
 
 # Load and preprocess the drone data
 input_file = "drone_data.json"
@@ -26,43 +24,30 @@ with open(input_file, encoding='utf-8') as f:
     parsed_json = json.load(f)
 
 # Dictionary comprehension to structure drone data by index
-drone_data_ai = {i + 1: image for i, image in enumerate(parsed_json["data"])}
-print(drone_data_ai)
+# drone_data_ai = {i + 1: image for i, image in enumerate(parsed_json["data"])}
+
+# print(drone_data_ai)
+
+# print("PARSED JSON", parsed_json)
+drone_data = parsed_json["data"]
+print("drone_data", drone_data)
 # Function to query OpenAI with the new API structure
 def query_openai(prompt):
     response = client.chat.completions.create(
-        model="gpt-4",  # Replace with your preferred model name
+        model="gpt-4o-mini",  
         messages=[{"role": "user", "content": prompt}],
         max_tokens=150,
         temperature=0.5
     )
-    print("query_openai response:", response)
+    # print("query_openai response:", response)
     return response.choices[0].message.content.strip()
 
-# Define table columns for data extraction
-table_columns = ['image_id', 'timestamp', 'latitude', 'longitude', 'altitude_m', 'heading_deg',
-                 'file_name', 'camera_tilt_deg', 'focal_length_mm', 'iso', 'shutter_speed',
-                 'aperture', 'color_temp_k', 'image_format', 'file_size_mb', 'drone_speed_mps',
-                 'battery_level_pct', 'gps_accuracy_m', 'gimbal_mode', 'subject_detection',
-                 'image_tags']
-
-# Function to extract specific data fields from the JSON data
-def extract_data(json_data, table_columns):
-    extracted_data = []
-    for record in json_data['data']:
-        drone = {col: record.get(col, None) for col in table_columns}
-        extracted_data.append(drone)
-    return {"drone_data": extracted_data}
-
-# Store extracted drone data in a dictionary
-drone_data = extract_data(parsed_json, table_columns)
 
 # Route to return the raw drone data as JSON
 @app.route('/api/data')
 def show_data():
-    # return jsonify(drone_data)
-    return jsonify(drone_data_ai)
-
+    return jsonify(drone_data)
+    # return jsonify(drone_data_ai)
 
 
 # Route to process user queries using OpenAI
@@ -115,7 +100,7 @@ def process_query():
     # print(f"OpenAI Response: {openai_response}")  # Debug the OpenAI response
     try:
         openai_response = query_openai(prompt)
-        print(f"OpenAI Response: {openai_response}")  # Debug the OpenAI response
+        # print(f"OpenAI Response: {openai_response}")  # Debug the OpenAI response
 
     except Exception as e:
         print(f"Error processing OpenAI query: {e}")
@@ -124,11 +109,12 @@ def process_query():
     # identify type of response and parse accordingly
 
     # aggregate calculations
-    if "The average" in openai_response or "The total" in openai_response or "The minimum" in openai_response or "The maximum" in openai_response:
+    if "average" in openai_response or "total" in openai_response or "minimum" in openai_response or "maximum" in openai_response:
         return jsonify({"type": "aggregate_response", "aggregate_response": openai_response})
     # multiple attributes, condition based queries
     elif ";" in openai_response:
         pairs = openai_response.split(";")
+        print("pairs", pairs)
         results = []
 
         for pair in pairs:
