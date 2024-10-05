@@ -37,7 +37,7 @@ const TableBody: React.FC<TableBodyProps> = ({
 }): JSX.Element => {
   // console.log("tableData", JSON.stringify(tableData));
 
-  for (const [key, value] of Object.entries(tableData)) {
+  for (const value of Object.values(tableData)) {
     console.log(JSON.stringify(value));
     if (Array.isArray(value["image_tags"])) {
       value["image_tags"] = value["image_tags"].join(", ");
@@ -54,7 +54,7 @@ const TableBody: React.FC<TableBodyProps> = ({
               {columns.map(({ accessor }: any) => {
                 const tData = data[accessor as keyof DroneData] ?? "--";
                 return (
-                  <td key={accessor} className="border-2 text-center">
+                  <td key={accessor} className="text-center border-2">
                     {tData}
                   </td>
                 );
