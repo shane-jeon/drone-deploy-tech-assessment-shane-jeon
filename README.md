@@ -1,4 +1,4 @@
-# Drone Deploy Technical Assessment - Shane Jeon
+# Drone Deploy Technical Assessment - SJ
 
 This is [Shane Jeon](https://www.shanejeon.com/)'s technical assessment for Drone Deploy. Frontend was built with the React framework using TypeScript while the Backend was built with the Python framework Flask. The user will be able to see a table containing the contents of the sample drone metadata. A user input box is available below the table, where the user can query for information related to the table. The user will then receive an AI response from OpenAI's API.
 
