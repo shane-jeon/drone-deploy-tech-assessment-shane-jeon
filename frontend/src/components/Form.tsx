@@ -83,7 +83,7 @@ function Form({ onSubmit }: FormProps) {
     <div>
       <form
         onSubmit={handleSubmit}
-        className="mt-4 flex flex-col rounded-md border-2 px-8 py-4">
+        className="flex flex-col px-8 py-4 mt-4 border-2 rounded-md">
         <label className="my-4 text-xl">
           Query:
           <input
@@ -91,7 +91,7 @@ function Form({ onSubmit }: FormProps) {
             name="query"
             value={queryFormData.query}
             onChange={handleInputChange}
-            className="ml-4 rounded-md border-2 py-2"
+            className="py-2 ml-4 border-2 rounded-md"
           />
         </label>
         <button
@@ -101,49 +101,51 @@ function Form({ onSubmit }: FormProps) {
         </button>
       </form>
       {queryResponse && (
-        <div>
-          <h3>Query Response:</h3>
-          {/* Render Aggregate Response */}
-          {"aggregate_response" in queryResponse && (
-            <p>{queryResponse.aggregate_response}</p>
-          )}
-          {/* Render Single Attribute Response */}
-          {"image_index" in queryResponse && "attribute" in queryResponse && (
-            <div>
-              <p>Image Index: {queryResponse.image_index}</p>
-              <p>Attribute: {queryResponse.attribute}</p>
-              <p>Value: {queryResponse.value}</p>
-            </div>
-          )}
-          {/* Render Multiple Image Response */}
-          {"multiple_image_response" in queryResponse && (
-            <div>
-              {queryResponse.multiple_image_response.map((item, index) => (
-                <div key={index}>
-                  <p>Image Index: {item.image_index}</p>
-                  <p>Attribute: {item.attribute}</p>
-                  <p>Value: {item.value}</p>
-                </div>
-              ))}
-            </div>
-          )}
-          {/* Render Tag Response */}
-          {"tags" in queryResponse && (
-            <div>
-              <p>Image Index: {queryResponse.image_index}</p>
-              <p>Tags: {queryResponse.tags.join(", ")}</p>
-            </div>
-          )}
-          {/* Render Raw Response */}
-          {"raw_openai_response" in queryResponse && (
-            <div>
-              <p>
-                NOTICE: The backend is not yet fully structured for this type of
-                query, so the response is being returned in its raw format.
-              </p>
-              <p>{queryResponse.raw_openai_response}</p>
-            </div>
-          )}
+        <div className="p-6 mt-10 border-2">
+          <h3 className="mb-4 text-2xl">Query Response:</h3>
+          <div className="text-xl">
+            {/* Render Aggregate Response */}
+            {"aggregate_response" in queryResponse && (
+              <p>{queryResponse.aggregate_response}</p>
+            )}
+            {/* Render Single Attribute Response */}
+            {"image_index" in queryResponse && "attribute" in queryResponse && (
+              <div>
+                <p>Image Index: {queryResponse.image_index}</p>
+                <p>Attribute: {queryResponse.attribute}</p>
+                <p>Value: {queryResponse.value}</p>
+              </div>
+            )}
+            {/* Render Multiple Image Response */}
+            {"multiple_image_response" in queryResponse && (
+              <div>
+                {queryResponse.multiple_image_response.map((item, index) => (
+                  <div key={index}>
+                    <p>Image Index: {item.image_index}</p>
+                    <p>Attribute: {item.attribute}</p>
+                    <p>Value: {item.value}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {/* Render Tag Response */}
+            {"tags" in queryResponse && (
+              <div>
+                <p>Image Index: {queryResponse.image_index}</p>
+                <p>Tags: {queryResponse.tags.join(", ")}</p>
+              </div>
+            )}
+            {/* Render Raw Response */}
+            {"raw_openai_response" in queryResponse && (
+              <div>
+                <p className="text-xl">{queryResponse.raw_openai_response}</p>
+                <p>
+                  NOTICE: The backend is not yet fully structured for this type
+                  of query, so the response is being returned in its raw format.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
