@@ -35,7 +35,7 @@ Navigate into main project directory:
 3. Install required dependencies:
    `pip install -r requirements.txt`
 
-4. Create `.env` file in `backend` folder and add your (OpenAI API Key)[https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key]
+4. Create `.env` file in `backend` folder and add your [OpenAI API Key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key)
 
 5. Start Flask backend server:
    `python3 server.py`
