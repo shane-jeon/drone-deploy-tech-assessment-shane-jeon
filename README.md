@@ -39,11 +39,13 @@ Navigate into main project directory:
 5. Start Flask backend server:
    `python3 server.py`
 
+6. **Keep this terminal open** to keep backend server running
+
 Backend server will run on `http://localhost:5000/` by default
 
 ### Frontend Setup
 
-1. In new terminal, navigate to `frontend` directory:
+1. Open new terminal, navigate to `frontend` directory from root folder `drone_deploy_technical_assessment_shane_jeon`:
    `cd frontend`
 
 2. Install frontend dependencies
