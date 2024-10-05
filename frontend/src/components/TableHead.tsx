@@ -49,7 +49,6 @@ const TableHead: React.FC<TableHeadProps> = ({
           return (
             <th
               key={accessor}
-              // className={`cursor-pointer border-2 border-black bg-slate-100 bg-right bg-no-repeat px-4 py-2`}
               className={`cursor-pointer border-2 border-black bg-slate-100 bg-right bg-no-repeat px-4 py-2`}
               style={backgroundStyles}
               onClick={

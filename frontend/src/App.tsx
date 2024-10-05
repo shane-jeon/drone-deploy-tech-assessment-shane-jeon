@@ -1,5 +1,3 @@
-import React from "react";
-// import { useState, useEffect } from "react";
 import Table from "./components/Table";
 import Form from "./components/Form";
 

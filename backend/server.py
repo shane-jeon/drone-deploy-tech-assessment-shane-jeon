@@ -22,16 +22,10 @@ app = Flask(__name__)
 input_file = "drone_data.json"
 with open(input_file, encoding='utf-8') as f:
     parsed_json = json.load(f)
-
-# Dictionary comprehension to structure drone data by index
-# drone_data_ai = {i + 1: image for i, image in enumerate(parsed_json["data"])}
-
-# print(drone_data_ai)
-
 # print("PARSED JSON", parsed_json)
+
 drone_data = parsed_json["data"]
 # print("drone_data", drone_data)
-
 
 # Function to query OpenAI with the new API structure
 def query_openai(prompt):
@@ -44,21 +38,18 @@ def query_openai(prompt):
     # print("query_openai response:", response)
     return response.choices[0].message.content.strip()
 
+@app.route('/')
+def home():
+    return "Drone Deploy Technical Assessment API"
 
 # Route to return the raw drone data as JSON
 @app.route('/api/data')
 def show_data():
     return jsonify(drone_data)
-    # return jsonify(drone_data_ai)
-
 
 # Route to process user queries using OpenAI
 @app.route('/api/input', methods=['POST'])
 def process_query():
-    # print("Request data:", request.data)
-
-    # user_input = request.json.get("query", "")
-    # print(f"Parsed user query: {user_input}")
     # Parse the incoming JSON to get the query
     try:
         user_input = request.json.get("query", "")
@@ -66,13 +57,8 @@ def process_query():
     except Exception as e:
         print(f"Failed to parse incoming JSON data: {e}")
         return jsonify({"error": "Failed to parse incoming JSON data"}), 400
-    # print(json.dumps(drone_data_ai, indent=2))
     
     # Construct the prompt to handle various questions about drone metadata
-    # asked chatgpt for questions that users could possibly query of drone metadata,
-    # adjusted prompt to be flexible with answers
-    # will need to adjust logic to handle the responses
-  # Adjust the end of your prompt to something like this:
     prompt = f"""
     You are an assistant that helps answer questions about drone image data. The data includes metadata for a series of images captured during a drone flight. Your job is to interpret the user's question and identify the specific attribute(s), calculations, or conditions they are asking about.
 
@@ -98,8 +84,6 @@ def process_query():
 
 
     # Query OpenAI with the constructed prompt
-    # openai_response = query_openai(prompt)
-    # print(f"OpenAI Response: {openai_response}")  
     try:
         openai_response = query_openai(prompt)
         print(f"OpenAI Response: {openai_response}") 
@@ -108,13 +92,13 @@ def process_query():
         print(f"Error processing OpenAI query: {e}")
         return jsonify({"error": "Error processing request"}), 500
 
-    # identify type of response and parse accordingly
+    # Identify type of response and parse accordingly
 
-    # aggregate calculations, what is the average file_size?
+    # AGGREGATE Responses (calculations). e.g., What is the average file_size?
     if "average" in openai_response or "total" in openai_response or "minimum" in openai_response or "maximum" in openai_response:
         return jsonify({"type": "aggregate_response", "aggregate_response": openai_response})
     
-    # multiple attributes, condition based queries (Which images have altitudes greater than 80?)
+    # MULTIPLE ATTRIBUTE Responses (condition based queries). e.g., Which images have altitudes greater than 80?
     elif ";" in openai_response:
         pairs = openai_response.split(";")
         print("pairs", pairs)
@@ -134,30 +118,23 @@ def process_query():
                 continue
         return jsonify({"type": "multiple_image_response", "multiple_image_response": results})
     
-    # tag based queries
+    # TAG BASED Query Responses, e.g, What image is tagged "elk"?
     elif "[" in openai_response and "]" in openai_response:
-        # handle tag based queries
         try:
             image_index, tags = openai_response.split(", tags:")
             image_index_cleaned = image_index.split(":")[0].strip().replace('"', '')
             image_index = int(image_index_cleaned)
             tags_cleaned = tags.strip().replace("'", '"')
             tags_list = json.loads(tags_cleaned)
-            print("image_index", image_index)
-            print("tags", tags_list)
-        #     return jsonify({
-        #     "type": "tag_response",
-        #     "image_index": image_index,
-        #     "tags": tags_list
-        # })
+            # print("image_index", image_index)
+            # print("tags", tags_list)
             return jsonify({"raw_openai_response" :openai_response})
 
         except (ValueError, IndexError, json.JSONDecodeError) as e:
             print(f"Error parsing tag-based response: {e}")
             return jsonify({"error": "Failed to interpret OpenAI response"}), 400
 
-    
-    # handle single image and attribute response
+    # SINGLE IMAGE/ATTRIBUTE & FALLBACK Response: e.g., What is the altitude of image 3?
     else: 
         try: 
             image_index, rest = map(str.strip, openai_response.split(","))
@@ -168,10 +145,10 @@ def process_query():
                 "attribute": attribute.strip(),
                 "value": value.strip()
             })
+        # if the response is not in the expected format, return the raw response
         except (ValueError, IndexError):
             print("Returning a raw response as fallback")
             return jsonify({"type": "raw_response", "raw_openai_response": openai_response})
-
 
 
 # Start the Flask server

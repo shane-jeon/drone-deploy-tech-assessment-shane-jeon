@@ -8,15 +8,6 @@ interface QueryFormData {
   query: string;
 }
 
-// NEW
-// Define a new interface to capture the structured response
-// interface QueryResponse {
-//   image_index: number;
-//   attribute: string;
-//   value: string | number;
-// }
-
-// NEW: adjusting to dynamically handle different response structures
 interface SingleAttributeResponse {
   image_index: number;
   attribute: string;
@@ -56,7 +47,6 @@ function Form({ onSubmit }: FormProps) {
   const [queryFormData, setQueryFormData] = useState<QueryFormData>({
     query: "",
   });
-  // NEW: state update, queryResponse to hold structured object instead of string
   const [queryResponse, setQueryResponse] = useState<QueryResponse | null>(
     null
   );
@@ -79,8 +69,7 @@ function Form({ onSubmit }: FormProps) {
 
       // Parse the response data to match the expected structure
       const data = await response.json();
-      console.log("Received response data:", data);
-      // Assuming the response has "image_index", "attribute", and "value"
+      // console.log("Received response data:", data);
       setQueryResponse(data);
 
       // clear input field after submission:
@@ -111,17 +100,13 @@ function Form({ onSubmit }: FormProps) {
           Submit
         </button>
       </form>
-
-      {/* NEW: Display the response in a structured format */}
       {queryResponse && (
         <div>
           <h3>Query Response:</h3>
-
           {/* Render Aggregate Response */}
           {"aggregate_response" in queryResponse && (
             <p>{queryResponse.aggregate_response}</p>
           )}
-
           {/* Render Single Attribute Response */}
           {"image_index" in queryResponse && "attribute" in queryResponse && (
             <div>
@@ -130,7 +115,6 @@ function Form({ onSubmit }: FormProps) {
               <p>Value: {queryResponse.value}</p>
             </div>
           )}
-
           {/* Render Multiple Image Response */}
           {"multiple_image_response" in queryResponse && (
             <div>
@@ -143,7 +127,6 @@ function Form({ onSubmit }: FormProps) {
               ))}
             </div>
           )}
-
           {/* Render Tag Response */}
           {"tags" in queryResponse && (
             <div>
@@ -151,7 +134,6 @@ function Form({ onSubmit }: FormProps) {
               <p>Tags: {queryResponse.tags.join(", ")}</p>
             </div>
           )}
-
           {/* Render Raw Response */}
           {"raw_openai_response" in queryResponse && (
             <div>
