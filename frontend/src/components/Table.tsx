@@ -81,13 +81,22 @@ const Table = () => {
         if (a[sortField] === null) return 1;
         if (b[sortField] === null) return -1;
         if (a[sortField] === null && b[sortField] === null) return 0;
-        return (
-          a[sortField as keyof DroneData]
-            .toString()
-            .localeCompare(b[sortField as keyof DroneData].toString(), "en", {
-              number: true,
-            }) * (sortOrder === "asc" ? 1 : -1)
-        );
+
+        const valueA = a[sortField as keyof DroneData];
+        const valueB = b[sortField as keyof DroneData];
+
+        const isNumber =
+          typeof valueA === "number" && typeof valueB === "number";
+        if (isNumber) {
+          return (valueA - valueB) * (sortOrder === "asc" ? 1 : -1);
+        } else {
+          return (
+            valueA
+              .toString()
+              .localeCompare(valueB.toString(), "en", { numeric: true }) *
+            (sortOrder === "asc" ? 1 : -1)
+          );
+        }
       });
       setTableData(sorted);
     }
