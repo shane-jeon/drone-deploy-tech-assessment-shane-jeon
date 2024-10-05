@@ -1,5 +1,7 @@
 # Drone Deploy Technical Assessment - Shane Jeon
 
+This is Shane Jeon's technical assessment for Drone Deploy. Frontend was built with the React framework using TypeScript while the Backend was built with the Python framework Flask. The user will be able to see a table containing the contents of the sample drone metadata. A user input box is available below the table, where the user can query for information related to the table. The user will then receive an AI response from OpenAI's API.
+
 ## Getting Started
 
 ### Prerequisites
@@ -58,3 +60,13 @@ Frontend server will run on `http://localhost:3000`
 - Frontend: React, TypeScript, TailwindCSS
 - Backend: Flask, Python, OpenAI API
 - Languages: Python, TypeScript
+
+### Additional Notes:
+
+- Recommended Dataset included as `drone_data.json` in `backend`
+
+### Known Issues & Limitations
+
+- While table is "sortable", some columns may not sort appropriately due to issues in sorting logic that I was unable to address within the given timeframe. With more time, I would have revisited and addressed these inconsistencies.
+- Sorting arrows displayed in table headers are not displaying correctly as there are incomplete styling adjustments when transitioning from CSS to TailwindCSS.
+- As responses from OpenAI needed to be formatted in a structured manner for TypeScript, I implemented specific conditions to handle what I hypothesized would be the most common queries. For queries that generate responses that don't fit the defined frontend types, a fallback option is in place to display raw JSON data. This will ensure that the requested information will be displayed accurately, but will lack styling.
